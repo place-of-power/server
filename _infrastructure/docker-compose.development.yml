@@ -1,0 +1,12 @@
+services:
+    php-cli:
+        volumes:
+            - ./php/_config/development/cli.ini:/usr/local/etc/php/conf.d/cli.ini
+
+    php-fpm:
+        volumes:
+            - ./php/_config/development/fpm.ini:/usr/local/etc/php/conf.d/fpm.ini
+
+    nginx:
+        volumes:
+            - ./nginx/development/conf.d:/etc/nginx/conf.d/

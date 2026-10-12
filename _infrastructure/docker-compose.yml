@@ -1,0 +1,59 @@
+services:
+    php-base:
+        build:
+            context: ..
+            dockerfile: ./_infrastructure/php/base/Dockerfile
+            args:
+                PHP_VERSION: ${PHP_VERSION}
+                PUID: ${PUID}
+                PGID: ${PGID}
+        image: php-base
+        container_name: php-base.${COMPOSE_PROJECT_NAME}
+        environment:
+            TZ: ${TIMEZONE}
+
+    php-cli:
+        build:
+            context: ..
+            dockerfile: ./_infrastructure/php/cli/Dockerfile
+        container_name: php-cli.${COMPOSE_PROJECT_NAME}
+        restart: always
+        tty: true
+        working_dir: /var/www/app
+        volumes:
+            - .././:/var/www/app
+        depends_on:
+            - php-base
+
+    php-fpm:
+        build:
+            context: ..
+            dockerfile: ./_infrastructure/php/fpm/Dockerfile
+            args:
+                PHP_VERSION: ${PHP_VERSION}
+                PUID: ${PUID}
+                PGID: ${PGID}
+        container_name: php-fpm.${COMPOSE_PROJECT_NAME}
+        restart: always
+        environment:
+            TZ: ${TIMEZONE}
+        working_dir: /var/www/app
+        volumes:
+            - .././:/var/www/app
+            - ./${LOGS_DIR}/php-fpm:/var/log/php-fpm
+        command: php-fpm
+
+    nginx:
+        image: nginx:alpine
+        container_name: nginx.${COMPOSE_PROJECT_NAME}
+        restart: always
+        ports:
+            - "${NGINX_PORT}:80"
+        environment:
+            TZ: ${TIMEZONE}
+        working_dir: /var/www/app
+        volumes:
+            - .././:/var/www/app
+            - ./${LOGS_DIR}/nginx:/var/log/nginx
+        links:
+            - php-fpm
