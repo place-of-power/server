@@ -43,6 +43,18 @@ services:
             - ./${LOGS_DIR}/php-fpm:/var/log/php-fpm
         command: php-fpm
 
+    postgres:
+        image: postgres:16-alpine
+        container_name: postgres.${COMPOSE_PROJECT_NAME}
+        restart: always
+        environment:
+            TZ: ${TIMEZONE}
+            POSTGRES_DB: ${POSTGRES_DB}
+            POSTGRES_USER: ${POSTGRES_USER}
+            POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+        volumes:
+            - ./${DATA_DIR}/postgres:/var/lib/postgresql/data
+
     nginx:
         image: nginx:alpine
         container_name: nginx.${COMPOSE_PROJECT_NAME}

@@ -8,3 +8,6 @@
 /var/
 /vendor/
 ###< symfony/framework-bundle ###
+
+# Local planning documents — not committed
+docs/PLAN.md
