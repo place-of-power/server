@@ -10,6 +10,7 @@ use Symfony\Component\EventDispatcher\Attribute\AsEventListener;
 use Symfony\Component\HttpKernel\Event\ExceptionEvent;
 use Symfony\Component\HttpKernel\Exception\HttpExceptionInterface;
 use Symfony\Component\HttpKernel\KernelEvents;
+use Symfony\Component\Messenger\Exception\HandlerFailedException;
 use Symfony\Component\Validator\Exception\ValidationFailedException;
 
 // priority between RouterListener (-64) and Symfony's ErrorListener (-128): the latter stops
@@ -25,6 +26,11 @@ final readonly class ApiExceptionListener
     public function __invoke(ExceptionEvent $event): void
     {
         $exception = $event->getThrowable();
+
+        if ($exception instanceof HandlerFailedException) {
+            $exception = $exception->getPrevious() ?? $exception;
+        }
+
         $http = $exception instanceof HttpExceptionInterface ? $exception : null;
 
         $validation = ($http?->getPrevious() ?? $exception);
