@@ -7,18 +7,16 @@
         "php": ">=8.4",
         "ext-ctype": "*",
         "ext-iconv": "*",
-        "doctrine/doctrine-bundle": "*",
-        "doctrine/doctrine-migrations-bundle": "^4.0",
-        "doctrine/migrations": "*",
-        "doctrine/orm": "^3.7",
+        "doctrine/migrations": "^3",
+        "doctrine/doctrine-bundle": "8.1.*",
         "symfony/console": "8.1.*",
         "symfony/dotenv": "8.1.*",
         "symfony/flex": "^2",
         "symfony/framework-bundle": "8.1.*",
-        "symfony/messenger": "8.1.*",
         "symfony/runtime": "8.1.*",
-        "symfony/uid": "8.1.*",
         "symfony/yaml": "8.1.*"
+    },
+    "require-dev": {
     },
     "config": {
         "allow-plugins": {
@@ -71,10 +69,5 @@
             "allow-contrib": false,
             "require": "8.1.*"
         }
-    },
-    "repositories": [{
-        "name": "packagist",
-        "type": "composer",
-        "url": "https://mirrors.cloud.tencent.com/composer/"
-    }]
+    }
 }

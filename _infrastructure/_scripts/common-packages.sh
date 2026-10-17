@@ -14,9 +14,7 @@ install-php-extensions \
     pcntl \
     exif \
     bcmath \
-    pcov \
-    pgsql \
-    pdo_pgsql
+    pcov
 
 # Рантайм-библиотеки держим, хедеры для сборки — чистим
 apk add --no-cache \
