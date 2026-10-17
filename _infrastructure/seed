@@ -1,0 +1,9 @@
+#!/bin/bash
+
+set -e
+
+cd "$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+
+# сиды дают схему и базовые категории, дамп сверху заменяет их самыми свежими данными
+./console doctrine:fixtures:load --no-interaction
+./db-restore
