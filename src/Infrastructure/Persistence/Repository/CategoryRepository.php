@@ -1,0 +1,38 @@
+<?php
+
+declare(strict_types=1);
+
+namespace App\Infrastructure\Persistence\Repository;
+
+use App\Domain\Contracts\Repository\CategoryRepository as CategoryRepositoryInterface;
+use App\Domain\Entity\Category;
+use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
+use Doctrine\Persistence\ManagerRegistry;
+use Symfony\Component\DependencyInjection\Attribute\AsAlias;
+
+/**
+ * @extends ServiceEntityRepository<Category>
+ */
+#[AsAlias(CategoryRepositoryInterface::class)]
+final class CategoryRepository extends ServiceEntityRepository implements CategoryRepositoryInterface
+{
+    public function __construct(ManagerRegistry $registry)
+    {
+        parent::__construct($registry, Category::class);
+    }
+
+    /**
+     * @return list<Category>
+     */
+    public function getOrdered(?int $limit): array
+    {
+        $qb = $this->createQueryBuilder('c')
+            ->orderBy('c.sortOrder');
+
+        if ($limit !== null) {
+            $qb->setMaxResults($limit);
+        }
+
+        return $qb->getQuery()->getResult();
+    }
+}

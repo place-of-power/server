@@ -6,10 +6,11 @@ namespace App\Domain\Entity;
 
 use App\Domain\ValueObjects\CategoryId;
 use App\Domain\ValueObjects\Slug;
+use App\Infrastructure\Persistence\Repository\CategoryRepository;
 use DateTimeImmutable;
 use Doctrine\ORM\Mapping as ORM;
 
-#[ORM\Entity]
+#[ORM\Entity(repositoryClass: CategoryRepository::class)]
 #[ORM\Table(name: 'categories')]
 #[ORM\UniqueConstraint(name: 'uq_categories_name', columns: ['name'])]
 #[ORM\UniqueConstraint(name: 'uq_categories_slug', columns: ['slug'])]
