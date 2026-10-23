@@ -5,12 +5,13 @@ declare(strict_types=1);
 namespace App\Presentation\Controllers\Api\V1;
 
 use App\Application\Command\CreateCategory\CreateCategoryCommand;
+use App\Application\Command\DeleteCategory\DeleteCategoryCommand;
+use App\Application\Query\ListCategories\ListCategoriesQuery;
 use App\Domain\Entity\Category;
 use App\Presentation\Http\ApiResponse;
 use App\Presentation\Requests\Api\V1\CreateCategoryRequest;
 use App\Presentation\Requests\Api\V1\ListCategoriesRequest;
 use App\Presentation\Resources\Api\V1\CategoryResource;
-use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Response;
@@ -24,13 +25,14 @@ final class CategoryController extends AbstractController
 {
     #[Route('/api/v1/categories', name: 'api_v1_categories', methods: ['GET'])]
     public function list(
-        EntityManagerInterface $entityManager,
-
         #[MapQueryString(validationFailedStatusCode: Response::HTTP_UNPROCESSABLE_ENTITY)]
         ListCategoriesRequest $request,
+
+        MessageBusInterface $messageBus,
     ): JsonResponse {
-        $categories = $entityManager->getRepository(Category::class)
-            ->findBy([], ['sortOrder' => 'ASC'], $request->limit);
+        $envelope = $messageBus->dispatch(new ListCategoriesQuery($request->limit));
+        /** @var list<Category> $categories */
+        $categories = $envelope->last(HandledStamp::class)->getResult();
 
         return ApiResponse::success(array_map(CategoryResource::fromEntity(...), $categories));
     }
@@ -51,5 +53,13 @@ final class CategoryController extends AbstractController
         $category = $envelope->last(HandledStamp::class)?->getResult();
 
         return ApiResponse::success(CategoryResource::fromEntity($category), Response::HTTP_CREATED);
+    }
+
+    #[Route('/api/v1/categories/{id}', name: 'api_v1_categories_delete', methods: ['DELETE'])]
+    public function delete(string $id, MessageBusInterface $messageBus): JsonResponse
+    {
+        $messageBus->dispatch(new DeleteCategoryCommand($id));
+
+        return ApiResponse::success(null);
     }
 }
