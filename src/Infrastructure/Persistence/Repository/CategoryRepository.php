@@ -35,4 +35,22 @@ final class CategoryRepository extends ServiceEntityRepository implements Catego
 
         return $qb->getQuery()->getResult();
     }
+
+    /**
+     * @param list<string> $ids
+     *
+     * @return list<Category>
+     */
+    public function getByIds(array $ids): array
+    {
+        if ([] === $ids) {
+            return [];
+        }
+
+        return $this->createQueryBuilder('c')
+            ->where('c.id IN (:ids)')
+            ->setParameter('ids', $ids)
+            ->getQuery()
+            ->getResult();
+    }
 }

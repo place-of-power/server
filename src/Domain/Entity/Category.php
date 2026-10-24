@@ -75,6 +75,12 @@ class Category
         return $this->sortOrder;
     }
 
+    public function changeSortOrder(int $sortOrder, DateTimeImmutable $now): void
+    {
+        $this->sortOrder = $sortOrder;
+        $this->updatedAt = $now;
+    }
+
     public function createdAt(): DateTimeImmutable
     {
         return $this->createdAt;
