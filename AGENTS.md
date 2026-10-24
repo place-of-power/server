@@ -63,7 +63,10 @@ docker-compose в `_infrastructure/`. Точные версии смотри в 
   `HandledStamp` (импорт `Symfony\Component\Messenger\Stamp\HandledStamp`).
 - Чтение и запись идут через CQRS-lite (команды и запросы на шине), а не
   напрямую через EntityManager в контроллере.
-- Методы репозитория: одна запись → `find*`, список → `get*`.
+- Методы репозитория именуются по возврату: одна запись → `find*`
+  (напр. `find`, `findOneBySlug`), список массивом → `get*`
+  (напр. `getOrdered`, `getByIds`). Никогда `findByIds` и т.п. для списка —
+  только `get*`.
 - Value-объекты держат свои инварианты (бросают `InvalidArgumentException`
   при невалидном значении, напр. `CategoryId`, `Slug`).
 - Дубли/конфликты в хендлере → `ConflictHttpException`; отсутствующая запись или
