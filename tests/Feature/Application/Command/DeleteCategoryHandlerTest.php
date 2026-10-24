@@ -4,26 +4,23 @@ declare(strict_types=1);
 
 namespace App\Tests\Feature\Application\Command;
 
-use App\Application\Command\CreateCategory\CreateCategoryCommand;
 use App\Application\Command\DeleteCategory\DeleteCategoryCommand;
 use App\Domain\Entity\Article;
 use App\Domain\Entity\Category;
 use App\Domain\Types\ArticleStatus;
 use App\Domain\ValueObjects\ArticleId;
 use App\Domain\ValueObjects\Slug;
+use App\Tests\Factory\CategoryFactory;
 use App\Tests\Feature\HandlerTestCase;
 use DateTimeImmutable;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\Messenger\Exception\HandlerFailedException;
-use Symfony\Component\Messenger\Stamp\HandledStamp;
 
 final class DeleteCategoryHandlerTest extends HandlerTestCase
 {
     public function testDeletesCategoryAndItsArticles(): void
     {
-        $envelope = $this->messageBus->dispatch(new CreateCategoryCommand('PHP', 'php', 0));
-        /** @var Category $category */
-        $category = $envelope->last(HandledStamp::class)->getResult();
+        $category = CategoryFactory::create($this->entityManager, 'PHP', 'php', 0);
         $this->entityManager->persist($this->article($category));
         $this->entityManager->flush();
 

@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace App\Tests\Feature\Application\Query;
 
-use App\Application\Command\CreateCategory\CreateCategoryCommand;
 use App\Application\Query\ListCategories\ListCategoriesQuery;
 use App\Domain\Entity\Category;
+use App\Tests\Factory\CategoryFactory;
 use App\Tests\Feature\HandlerTestCase;
 use Symfony\Component\Messenger\Stamp\HandledStamp;
 
@@ -14,9 +14,9 @@ final class ListCategoriesHandlerTest extends HandlerTestCase
 {
     public function testReturnsCategoriesOrderedBySortOrderWithoutLimit(): void
     {
-        $this->create('СУБД', 'databases', 30);
-        $this->create('PHP', 'php', 10);
-        $this->create('Архитектура', 'architecture', 20);
+        CategoryFactory::create($this->entityManager, 'СУБД', 'databases', 30);
+        CategoryFactory::create($this->entityManager, 'PHP', 'php', 10);
+        CategoryFactory::create($this->entityManager, 'Архитектура', 'architecture', 20);
 
         $envelope = $this->messageBus->dispatch(new ListCategoriesQuery(null));
         /** @var list<Category> $categories */
@@ -31,9 +31,9 @@ final class ListCategoriesHandlerTest extends HandlerTestCase
 
     public function testLimitRestrictsCount(): void
     {
-        $this->create('PHP', 'php', 10);
-        $this->create('СУБД', 'databases', 20);
-        $this->create('Архитектура', 'architecture', 30);
+        CategoryFactory::create($this->entityManager, 'PHP', 'php', 10);
+        CategoryFactory::create($this->entityManager, 'СУБД', 'databases', 20);
+        CategoryFactory::create($this->entityManager, 'Архитектура', 'architecture', 30);
 
         $envelope = $this->messageBus->dispatch(new ListCategoriesQuery(2));
         /** @var list<Category> $categories */
@@ -44,10 +44,5 @@ final class ListCategoriesHandlerTest extends HandlerTestCase
             static fn (Category $c): string => $c->name(),
             $categories,
         ));
-    }
-
-    private function create(string $name, string $slug, int $sortOrder): void
-    {
-        $this->messageBus->dispatch(new CreateCategoryCommand($name, $slug, $sortOrder));
     }
 }

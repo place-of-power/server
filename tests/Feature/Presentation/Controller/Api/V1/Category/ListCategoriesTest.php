@@ -4,9 +4,7 @@ declare(strict_types=1);
 
 namespace App\Tests\Feature\Presentation\Controller\Api\V1\Category;
 
-use App\Domain\Entity\Category;
-use App\Domain\ValueObjects\CategoryId;
-use App\Domain\ValueObjects\Slug;
+use App\Tests\Factory\CategoryFactory;
 use App\Tests\Feature\ControllerTestCase;
 use Doctrine\ORM\EntityManagerInterface;
 
@@ -25,9 +23,10 @@ final class ListCategoriesTest extends ControllerTestCase
 
     public function testListReturnsCategoriesOrderedBySortOrder(): void
     {
-        $this->seedCategory('СУБД', 'databases', 30);
-        $this->seedCategory('PHP', 'php', 10);
-        $this->seedCategory('Архитектура', 'architecture', 20);
+        $em = static::getContainer()->get(EntityManagerInterface::class);
+        CategoryFactory::create($em, 'СУБД', 'databases', 30);
+        CategoryFactory::create($em, 'PHP', 'php', 10);
+        CategoryFactory::create($em, 'Архитектура', 'architecture', 20);
 
         $this->client->request('GET', $this->route('api_v1_categories'));
 
@@ -45,12 +44,5 @@ final class ListCategoriesTest extends ControllerTestCase
         self::assertResponseStatusCodeSame(422);
         self::assertNull($this->jsonResponse()['data']);
         self::assertNotEmpty($this->jsonResponse()['errors']);
-    }
-
-    private function seedCategory(string $name, string $slug, int $sortOrder): void
-    {
-        $manager = static::getContainer()->get(EntityManagerInterface::class);
-        $manager->persist(Category::create(CategoryId::random(), $name, new Slug($slug), $sortOrder));
-        $manager->flush();
     }
 }
