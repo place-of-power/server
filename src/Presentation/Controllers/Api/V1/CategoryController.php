@@ -6,11 +6,13 @@ namespace App\Presentation\Controllers\Api\V1;
 
 use App\Application\Command\CreateCategory\CreateCategoryCommand;
 use App\Application\Command\DeleteCategory\DeleteCategoryCommand;
+use App\Application\Command\ReorderCategories\ReorderCategoriesCommand;
 use App\Application\Query\ListCategories\ListCategoriesQuery;
 use App\Domain\Entity\Category;
 use App\Presentation\Http\ApiResponse;
 use App\Presentation\Requests\Api\V1\CreateCategoryRequest;
 use App\Presentation\Requests\Api\V1\ListCategoriesRequest;
+use App\Presentation\Requests\Api\V1\ReorderCategoriesRequest;
 use App\Presentation\Resources\Api\V1\CategoryResource;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -59,6 +61,18 @@ final class CategoryController extends AbstractController
     public function delete(string $id, MessageBusInterface $messageBus): JsonResponse
     {
         $messageBus->dispatch(new DeleteCategoryCommand($id));
+
+        return ApiResponse::success(null);
+    }
+
+    #[Route('/api/v1/categories/reorder', name: 'api_v1_categories_reorder', methods: ['PUT'])]
+    public function reorder(
+        #[MapRequestPayload(validationFailedStatusCode: Response::HTTP_UNPROCESSABLE_ENTITY)]
+        ReorderCategoriesRequest $request,
+
+        MessageBusInterface $messageBus,
+    ): JsonResponse {
+        $messageBus->dispatch(new ReorderCategoriesCommand($request->items));
 
         return ApiResponse::success(null);
     }
