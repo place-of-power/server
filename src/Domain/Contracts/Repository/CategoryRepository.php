@@ -21,4 +21,6 @@ interface CategoryRepository
     public function getByIds(array $ids): array;
 
     public function findById(string $id): ?Category;
+
+    public function findBySlug(string $slug): ?Category;
 }

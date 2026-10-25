@@ -35,4 +35,34 @@ final class ArticleRepository extends ServiceEntityRepository implements Article
             ->getQuery()
             ->getResult();
     }
+
+    /**
+     * @param array{publishedAt: \DateTimeImmutable, id: string} $cursor
+     *
+     * @return array{items: list<Article>, hasMore: bool}
+     */
+    public function getCategoryPage(string $categoryId, int $limit, ?array $cursor): array
+    {
+        $qb = $this->createQueryBuilder('a')
+            ->where('a.status = :published')
+            ->andWhere('a.category = :category')
+            ->setParameter('published', ArticleStatus::Published)
+            ->setParameter('category', $categoryId)
+            ->orderBy('a.publishedAt', 'DESC')
+            ->addOrderBy('a.id', 'DESC')
+            ->setMaxResults($limit + 1);
+
+        if ($cursor !== null) {
+            $qb->andWhere('a.publishedAt < :cursorAt OR (a.publishedAt = :cursorAt AND a.id < :cursorId)')
+                ->setParameter('cursorAt', $cursor['publishedAt'])
+                ->setParameter('cursorId', $cursor['id']);
+        }
+
+        $rows = $qb->getQuery()->getResult();
+
+        $hasMore = count($rows) > $limit;
+        $items = $hasMore ? array_slice($rows, 0, $limit) : $rows;
+
+        return ['items' => $items, 'hasMore' => $hasMore];
+    }
 }

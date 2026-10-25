@@ -12,4 +12,11 @@ interface ArticleRepository
      * @return list<Article>
      */
     public function getRecent(int $limit): array;
+
+    /**
+     * @param array{publishedAt: \DateTimeImmutable, id: string} $cursor
+     *
+     * @return array{items: list<Article>, hasMore: bool}
+     */
+    public function getCategoryPage(string $categoryId, int $limit, ?array $cursor): array;
 }

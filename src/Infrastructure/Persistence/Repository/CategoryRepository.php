@@ -58,4 +58,9 @@ final class CategoryRepository extends ServiceEntityRepository implements Catego
     {
         return $this->find($id);
     }
+
+    public function findBySlug(string $slug): ?Category
+    {
+        return $this->findOneBy(['slug' => $slug]);
+    }
 }
