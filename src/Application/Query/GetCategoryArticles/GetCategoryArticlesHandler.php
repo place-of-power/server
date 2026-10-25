@@ -35,7 +35,7 @@ final readonly class GetCategoryArticlesHandler
             ? ['publishedAt' => $query->cursor->publishedAt, 'id' => $query->cursor->id]
             : null;
 
-        $page = $this->articlesRepository->getCategoryPage($category->id()->value, $query->limit, $cursorArray);
+        $page = $this->articlesRepository->getFromCategoryWithCursor($category->id()->value, $query->limit, $cursorArray);
 
         $nextCursor = $page['hasMore'] && $page['items']
             ? (new ArticleCursor(
