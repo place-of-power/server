@@ -65,4 +65,9 @@ final class ArticleRepository extends ServiceEntityRepository implements Article
 
         return ['items' => $items, 'hasMore' => $hasMore];
     }
+
+    public function findBySlug(string $slug): ?Article
+    {
+        return $this->findOneBy(['slug' => $slug]);
+    }
 }

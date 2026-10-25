@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Presentation\Controllers\Api\V1;
 
 use App\Application\Command\CreateArticle\CreateArticleCommand;
+use App\Application\Query\GetArticle\GetArticleQuery;
 use App\Application\Query\GetRecentArticles\GetRecentArticlesQuery;
 use App\Domain\Entity\Article;
 use App\Presentation\Http\ApiResponse;
@@ -36,6 +37,16 @@ final class ArticleController extends AbstractController
 
         return ApiResponse::success(array_map(ArticlePreviewResource::fromEntity(...), $articles));
     }
+
+    #[Route('/api/v1/articles/{slug}', name: 'api_v1_articles_show', methods: ['GET'])]
+    public function show(string $slug, MessageBusInterface $messageBus): JsonResponse
+    {
+        $envelope = $messageBus->dispatch(new GetArticleQuery($slug));
+        $article = $envelope->last(HandledStamp::class)->getResult();
+
+        return ApiResponse::success(ArticleResource::fromEntity($article));
+    }
+
     #[Route('/api/v1/articles', name: 'api_v1_articles_create', methods: ['POST'])]
     public function create(
         #[MapRequestPayload(validationFailedStatusCode: Response::HTTP_UNPROCESSABLE_ENTITY)]

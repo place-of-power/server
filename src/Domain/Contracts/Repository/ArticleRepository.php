@@ -19,4 +19,6 @@ interface ArticleRepository
      * @return array{items: list<Article>, hasMore: bool}
      */
     public function getCategoryPage(string $categoryId, int $limit, ?array $cursor): array;
+
+    public function findBySlug(string $slug): ?Article;
 }
