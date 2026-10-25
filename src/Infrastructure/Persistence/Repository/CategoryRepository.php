@@ -53,4 +53,9 @@ final class CategoryRepository extends ServiceEntityRepository implements Catego
             ->getQuery()
             ->getResult();
     }
+
+    public function findById(string $id): ?Category
+    {
+        return $this->find($id);
+    }
 }

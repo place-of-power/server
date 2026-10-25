@@ -19,4 +19,6 @@ interface CategoryRepository
      * @return list<Category>
      */
     public function getByIds(array $ids): array;
+
+    public function findById(string $id): ?Category;
 }
