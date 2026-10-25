@@ -17,6 +17,7 @@ final readonly class ArticleResource
         public string $status,
         public string $categoryId,
         public string $categorySlug,
+        public string $categoryName,
     ) {
     }
 
@@ -31,6 +32,7 @@ final readonly class ArticleResource
             $article->status()->value,
             $article->categoryId()->value,
             $article->category()->slug()->value,
+            $article->category()->name(),
         );
     }
 }
